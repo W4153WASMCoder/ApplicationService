@@ -4,6 +4,7 @@ import * as dotenv from "dotenv";
 import express from "express";
 import type { Application } from "express";
 import http, { Server as HttpServer } from "http";
+import cors from "cors";
 import fs from "fs";
 // for projects microservice
 import project_router from "./routes/projects.js";
@@ -30,6 +31,13 @@ const httpServer: HttpServer = http.createServer(app);
 
 //Middleware Definition
 app.use(log_init);
+app.use(
+    cors({
+        origin: process.env.CORS_ORIGIN,
+        methods: ["GET", "POST", "OPTIONS"], // Include the methods you need
+        allowedHeaders: ["Content-Type", "Authorization"], // Adjust based on your needs
+    }),
+);
 app.use(express.static("./static"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

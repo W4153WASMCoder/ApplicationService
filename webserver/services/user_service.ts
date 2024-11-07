@@ -55,7 +55,6 @@ export class User {
                 },
             );
             const token = JSON.parse(response.data);
-            console.log(token.TokenID);
             if (response.status === 201) {
                 return token;
             } else {
