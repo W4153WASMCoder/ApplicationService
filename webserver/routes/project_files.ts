@@ -402,8 +402,7 @@ router.get("/:fileId", async (req: Request, res: Response) => {
  * @desc List all files in a project with pagination and HATEOAS links
  */
 router.get("/", async (req: Request, res: Response) => {
-    const { ProjectID } = req.query;
-    const userId = (req as any).userId;
+    const { ProjectID, UserID } = req.query;
 
     if (!ProjectID) {
         res.status(400).json({
@@ -419,7 +418,7 @@ router.get("/", async (req: Request, res: Response) => {
     try {
         // Call the ProjectService to get paginated files and total count
         const { total, files } = await ProjectService.listFiles(
-            userId,
+            Number(UserID),
             Number(ProjectID),
             limit,
             offset,

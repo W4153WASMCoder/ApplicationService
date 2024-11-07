@@ -96,20 +96,27 @@ export class ProjectService {
      */
     static async listProjects(
         userId: number,
-    ): Promise<{ Projects: Project[] }> {
+        limit: number,
+        offset: number,
+    ): Promise<{ Projects: Project[]; total: number }> {
         try {
             const response = await axios.get(
                 `${PROJECT_SERVICE_URL}/projects`,
                 {
                     params: {
                         OwningUserID: userId,
+                        limit: limit,
+                        offset: offset,
                     },
                 },
             );
 
             if (response.status === 200) {
-                const projects = response.data.data as Project[];
-                return { Projects: projects };
+                const total = response.data.total as number;
+                const projects = response.data.data.map((project: string) =>
+                    JSON.parse(project),
+                ) as Project[];
+                return { Projects: projects, total: total };
             } else {
                 throw new Error("Failed to list projects");
             }

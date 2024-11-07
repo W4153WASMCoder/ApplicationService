@@ -34,8 +34,8 @@ app.use(log_init);
 app.use(
     cors({
         origin: process.env.CORS_ORIGIN,
-        methods: ["GET", "POST", "OPTIONS"], // Include the methods you need
-        allowedHeaders: ["Content-Type", "Authorization"], // Adjust based on your needs
+        methods: ["GET", "POST", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization", "tokenid"],
     }),
 );
 app.use(express.static("./static"));

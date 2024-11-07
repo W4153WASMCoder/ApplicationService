@@ -2,6 +2,9 @@
 import { Router, Request, Response } from "express";
 import { authMiddleware } from "../middleware/auth.js";
 import { ProjectService } from "../services/project_service.js";
+import { paginate, Pagination } from "../middleware/pagination.js";
+import { generateHATEOASLinks } from "../lib/hateoas.js";
+import { Project } from "../models/files_models.js";
 
 const router = Router();
 
@@ -31,11 +34,31 @@ router.use(authMiddleware);
  *           type: string
  *           format: date-time
  *           description: Project creation date
+ *         links:
+ *           type: object
+ *           properties:
+ *             self:
+ *               type: string
+ *               description: Link to the project itself
+ *             update:
+ *               type: string
+ *               description: Link to update the project
+ *             delete:
+ *               type: string
+ *               description: Link to delete the project
+ *             open:
+ *               type: string
+ *               description: Link to open project files
  *       example:
  *         ProjectID: 1
  *         OwningUserID: 42
  *         ProjectName: "My Project"
  *         CreationDate: "2024-10-28T12:00:00Z"
+ *         links:
+ *           self: "http://localhost:8000/projects/1"
+ *           update: "http://localhost:8000/projects/1"
+ *           delete: "http://localhost:8000/projects/1"
+ *           open: "http://localhost:8000/project_files?ProjectID=1&UserID=42"
  *     AddProjectRequest:
  *       type: object
  *       required:
@@ -122,6 +145,7 @@ router.use(authMiddleware);
  *       500:
  *         description: Internal server error
  */
+
 /**
  * @swagger
  * /projects/{projectId}:
@@ -153,6 +177,7 @@ router.use(authMiddleware);
  *       500:
  *         description: Internal server error
  */
+
 /**
  * @swagger
  * /projects/{projectId}:
@@ -203,11 +228,12 @@ router.use(authMiddleware);
  *       500:
  *         description: Internal server error
  */
+
 /**
  * @swagger
  * /projects:
  *   get:
- *     summary: List all projects for a user
+ *     summary: List all projects for a user with pagination
  *     tags: [Projects]
  *     security:
  *       - TokenID: []
@@ -218,9 +244,23 @@ router.use(authMiddleware);
  *         schema:
  *           type: string
  *         description: Token ID for authentication
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 25
+ *         description: Number of projects to return
+ *       - in: query
+ *         name: offset
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *         description: Number of projects to skip before starting to return results
  *     responses:
  *       200:
- *         description: A list of projects
+ *         description: A paginated list of projects with HATEOAS links
  *         content:
  *           application/json:
  *             schema:
@@ -233,6 +273,24 @@ router.use(authMiddleware);
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Project'
+ *                 links:
+ *                   type: object
+ *                   properties:
+ *                     self:
+ *                       type: string
+ *                       description: Link to the current page of projects
+ *                     first:
+ *                       type: string
+ *                       description: Link to the first page of projects
+ *                     last:
+ *                       type: string
+ *                       description: Link to the last page of projects
+ *                     prev:
+ *                       type: string
+ *                       description: Link to the previous page of projects
+ *                     next:
+ *                       type: string
+ *                       description: Link to the next page of projects
  *       500:
  *         description: Internal server error
  */
@@ -336,12 +394,38 @@ router.put("/:projectId", async (req: Request, res: Response) => {
  * @route GET /projects
  * @desc List all projects for a user
  */
-router.get("/", async (req: Request, res: Response) => {
+
+router.get("/", paginate, async (req: Request, res: Response) => {
     const userId = (req as any).userId;
+    const { limit, offset } = (req as any).pagination as Pagination;
 
     try {
-        const projects = await ProjectService.listProjects(userId);
-        res.json({ status: "success", data: projects });
+        // Fetch total project count and the paginated list of projects
+        const { Projects, total } = await ProjectService.listProjects(
+            userId,
+            limit,
+            offset,
+        );
+
+        // Generate HATEOAS links for pagination
+        const paginationLinks = generateHATEOASLinks(req, total, limit, offset);
+
+        // Add HATEOAS links to each project in the data
+        const projectsWithLinks = Projects.map((project: Project) => ({
+            project,
+            links: {
+                self: `${req.protocol}://${req.get("host")}/projects/${project.ProjectID}`,
+                update: `${req.protocol}://${req.get("host")}/projects/${project.ProjectID}`,
+                delete: `${req.protocol}://${req.get("host")}/projects/${project.ProjectID}`,
+                open: `${req.protocol}://${req.get("host")}/project_files?ProjectID=${project.ProjectID}&UserID=${project.OwningUserID}`,
+            },
+        }));
+
+        res.json({
+            status: "success",
+            data: projectsWithLinks,
+            links: paginationLinks,
+        });
     } catch (error) {
         console.error("Error listing projects:", error);
         res.status(500).json({
