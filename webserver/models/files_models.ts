@@ -6,11 +6,11 @@ export interface Project {
 }
 export interface ProjectFile {
     FileID: number | null;
-    projectID: number;
-    parentDirectory: number | null;
-    fileName: string;
-    isDirectory: boolean;
-    creationDate: Date;
+    ProjectID: number;
+    ParentDirectory: number | null;
+    FileName: string;
+    IsDirectory: boolean;
+    CreationDate: Date;
 }
 export interface ProjectFileStructure {
     file: ProjectFile;

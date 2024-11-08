@@ -255,14 +255,16 @@ export class ProjectService {
                 {
                     params: {
                         ProjectID: ProjectID,
-                        limit: limit, // Adjust limit as needed
+                        limit: 100, // Adjust limit as needed
                         offset: offset,
                     },
                 },
             );
 
             if (response.status === 200) {
-                const files = JSON.parse(response.data.data) as ProjectFile[];
+                const files = response.data.data.map((file: any) =>
+                    JSON.parse(file),
+                ) as ProjectFile[];
                 const fileStructure = this.buildFileStructure(files);
                 return { total: files.length, files: fileStructure };
             } else {
@@ -295,12 +297,12 @@ export class ProjectService {
 
         // Build the hierarchical structure
         files.forEach((file) => {
-            if (file.parentDirectory) {
+            if (file.ParentDirectory) {
                 // If the file has a parent, add it as a child of that parent using fileName as the key
-                const parent = fileMap.get(file.parentDirectory);
+                const parent = fileMap.get(file.ParentDirectory);
                 if (parent) {
                     parent.children.set(
-                        file.fileName,
+                        file.FileName,
                         fileMap.get(file.FileID!)!,
                     );
                 }

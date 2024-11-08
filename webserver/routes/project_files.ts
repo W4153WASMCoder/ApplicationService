@@ -3,6 +3,7 @@ import { Router, Request, Response } from "express";
 import { authMiddleware } from "../middleware/auth.js";
 import { ProjectService } from "../services/project_service.js";
 import { generateHATEOASLinks } from "../lib/hateoas.js";
+import { paginate } from "../middleware/pagination.js";
 
 const router = Router();
 
@@ -401,7 +402,7 @@ router.get("/:fileId", async (req: Request, res: Response) => {
  * @route GET /project_files
  * @desc List all files in a project with pagination and HATEOAS links
  */
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", paginate, async (req: Request, res: Response) => {
     const { ProjectID, UserID } = req.query;
 
     if (!ProjectID) {
@@ -426,7 +427,6 @@ router.get("/", async (req: Request, res: Response) => {
 
         // Generate HATEOAS links
         const links = generateHATEOASLinks(req, total, limit, offset);
-
         // Respond with paginated files and HATEOAS links
         res.json({
             status: "success",
