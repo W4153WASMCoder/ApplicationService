@@ -4,7 +4,7 @@ import { authMiddleware } from "../middleware/auth.js";
 import { ProjectService } from "../services/project_service.js";
 import { generateHATEOASLinks } from "../lib/hateoas.js";
 import { paginate } from "../middleware/pagination.js";
-
+// credit to https://stackoverflow.com/questions/29085197/how-do-you-json-stringify-an-es6-map for json replacer for maps
 const router = Router();
 
 // Apply auth middleware to all file routes
