@@ -433,7 +433,16 @@ router.get("/", paginate, async (req: Request, res: Response) => {
             total,
             limit,
             offset,
-            data: files,
+            data: JSON.stringify(files, function replacer(key, value) {
+                if (value instanceof Map) {
+                    return {
+                        dataType: "Map",
+                        value: Array.from(value.entries()), // or with spread: value: [...value]
+                    };
+                } else {
+                    return value;
+                }
+            }),
             links,
         });
     } catch (error: any) {
