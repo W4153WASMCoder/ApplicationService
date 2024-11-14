@@ -12,14 +12,7 @@ This project is a TypeScript-based Express application that interacts with both 
 
 ## Getting Started
 
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/W4153WASMCoder/ApplicationService.git
-cd ApplicationService/webserver
-```
-
-### 2. Set Up Environment Variables
+### 1. Set Up Environment Variables
 
 Create a `.env` file in the `webserver` directory and add the following configuration:
 
@@ -32,11 +25,11 @@ PORT=8000
 
 Ensure the URLs match where your User and Project Services are running.
 
-### 3. Start Dependencies
+### 2. Start Dependencies
 
 Make sure that both the **User Service** and **Project Service** are running. This service depends on these services for handling user authentication and project data.
 
-### 4. Install Dependencies
+### 3. Install Dependencies
 
 Navigate to the `webserver` directory and install dependencies:
 
@@ -44,7 +37,7 @@ Navigate to the `webserver` directory and install dependencies:
 npm install
 ```
 
-### 5. Build the Project
+### 4. Build the Project
 
 To compile TypeScript files, run:
 
@@ -54,7 +47,7 @@ npm run build
 
 The compiled JavaScript files will be located in the `dist/` folder.
 
-### 6. Run the Application
+### 5. Run the Application
 
 - **Production:** Run the compiled code with Node.js:
   ```bash
@@ -66,7 +59,7 @@ The compiled JavaScript files will be located in the `dist/` folder.
   npm run dev
   ```
 
-### 7. Access the API
+### 6. Access the API
 
 Once running, the app will be accessible at `http://localhost:8000` (or the port specified in your `.env` file).
 
