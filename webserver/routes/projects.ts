@@ -312,13 +312,27 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     try {
-        const status = await ProjectService.addProject(userId, ProjectName);
+        // adding the project and getting the data
+        const newProject = await ProjectService.addProject(userId, ProjectName);
+
+        // generate links
+        const links = {
+            self: `${req.protocol}://${req.get("host")}/projects/${newProject.ProjectID}`,
+            update: `${req.protocol}://${req.get("host")}/projects/${newProject.ProjectID}`,
+            delete: `${req.protocol}://${req.get("host")}/projects/${newProject.ProjectID}`,
+            open: `${req.protocol}://${req.get("host")}/project_files?ProjectID=${newProject.ProjectID}&UserID=${newProject.OwningUserID}`,
+        };
+
         res.status(201).json({
             status: "success",
             message: "Project created",
-            data: status,
+            data: {
+                ...newProject,
+                links, // including hateos links in the response back
+            },
         });
     } catch (error: any) {
+        console.error("Error creating project:", error);
         res.status(500).json({
             status: "error",
             message: "Internal server error",
