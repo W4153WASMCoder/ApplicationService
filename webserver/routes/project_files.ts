@@ -266,13 +266,13 @@ router.use(authMiddleware);
  * @desc Add a new file
  */
 router.post("/", async (req: Request, res: Response) => {
-    const { ProjectID, Filename, ParentDirectory_FileID } = req.body;
+    const { ProjectID, FileName, ParentDirectory_FileID } = req.body;
     const userId = (req as any).userId;
 
-    if (!ProjectID || !Filename) {
+    if (!ProjectID || !FileName) {
         res.status(400).json({
             status: "error",
-            message: "ProjectID and Filename are required",
+            message: "ProjectID and FileName are required",
         });
         return;
     }
@@ -281,7 +281,7 @@ router.post("/", async (req: Request, res: Response) => {
         const status = await ProjectService.addFile(
             userId,
             ProjectID,
-            Filename,
+            FileName,
             ParentDirectory_FileID,
         );
         res.status(201).json({
