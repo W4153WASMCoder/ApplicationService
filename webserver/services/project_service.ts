@@ -163,11 +163,7 @@ export class ProjectService {
      * @param ProjectID ID of the project
      * @param FileID ID of the file to delete
      */
-    static async deleteFile(
-        userId: number,
-        ProjectID: number,
-        FileID: number,
-    ): Promise<string> {
+    static async deleteFile(userId: number, FileID: number): Promise<string> {
         try {
             const response = await axios.delete(
                 `${PROJECT_SERVICE_URL}/project_files/${FileID}`,
