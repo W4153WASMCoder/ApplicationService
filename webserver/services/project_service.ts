@@ -138,6 +138,7 @@ export class ProjectService {
         ProjectID: number,
         FileName: string,
         ParentDirectory_FileID: number | null,
+        IsDirectory: boolean = false,
     ): Promise<void> {
         try {
             const response = await axios.post(
@@ -146,7 +147,7 @@ export class ProjectService {
                     ProjectID,
                     ParentDirectory: ParentDirectory_FileID,
                     FileName,
-                    IsDirectory: false,
+                    IsDirectory: IsDirectory,
                 },
             );
 

@@ -267,7 +267,8 @@ router.use(authMiddleware);
  * @desc Add a new file
  */
 router.post("/", async (req: Request, res: Response) => {
-    const { ProjectID, FileName, ParentDirectory_FileID } = req.body;
+    const { ProjectID, FileName, ParentDirectory_FileID, IsDirectory } =
+        req.body;
     const userId = (req as any).userId;
 
     if (!ProjectID || !FileName) {
@@ -284,6 +285,7 @@ router.post("/", async (req: Request, res: Response) => {
             ProjectID,
             FileName,
             ParentDirectory_FileID,
+            IsDirectory,
         );
         res.status(201).json({
             status: "success",
