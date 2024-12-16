@@ -4,6 +4,7 @@ import { authMiddleware } from "../middleware/auth.js";
 import { ProjectService } from "../services/project_service.js";
 import { generateHATEOASLinks } from "../lib/hateoas.js";
 import { paginate } from "../middleware/pagination.js";
+import axios from "axios";
 // credit to https://stackoverflow.com/questions/29085197/how-do-you-json-stringify-an-es6-map for json replacer for maps
 const router = Router();
 
@@ -266,7 +267,8 @@ router.use(authMiddleware);
  * @desc Add a new file
  */
 router.post("/", async (req: Request, res: Response) => {
-    const { ProjectID, FileName, ParentDirectory_FileID } = req.body;
+    const { ProjectID, FileName, ParentDirectory_FileID, IsDirectory } =
+        req.body;
     const userId = (req as any).userId;
     const uid = req.uid as string;
 
@@ -285,6 +287,7 @@ router.post("/", async (req: Request, res: Response) => {
             FileName,
             ParentDirectory_FileID,
             uid,
+            IsDirectory,
         );
         res.status(201).json({
             status: "success",
@@ -306,25 +309,10 @@ router.post("/", async (req: Request, res: Response) => {
  */
 router.delete("/:fileId", async (req: Request, res: Response) => {
     const { fileId } = req.params;
-    const { ProjectID } = req.body;
     const userId = (req as any).userId;
     const uid = req.uid as string;
-
-    if (!ProjectID) {
-        res.status(400).json({
-            status: "error",
-            message: "ProjectID is required",
-        });
-        return;
-    }
-
     try {
-        const status = await ProjectService.deleteFile(
-            userId,
-            ProjectID,
-            Number(fileId),
-            uid,
-        );
+        const status = await ProjectService.deleteFile(userId, Number(fileId), uid);
         res.json({ status: "success", message: "File deleted", data: status });
     } catch (error) {
         console.error("Error deleting file:", error);

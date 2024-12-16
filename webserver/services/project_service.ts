@@ -150,7 +150,8 @@ export class ProjectService {
         ProjectID: number,
         FileName: string,
         ParentDirectory_FileID: number | null,
-        uid: string
+        uid: string,
+        IsDirectory: boolean = false,
     ): Promise<void> {
         try {
             const response = await axios.post(
@@ -159,7 +160,7 @@ export class ProjectService {
                     ProjectID,
                     ParentDirectory: ParentDirectory_FileID,
                     FileName,
-                    IsDirectory: false,
+                    IsDirectory: IsDirectory,
                 },
                 {
                     headers: { uid }
@@ -179,12 +180,7 @@ export class ProjectService {
      * @param ProjectID ID of the project
      * @param FileID ID of the file to delete
      */
-    static async deleteFile(
-        userId: number,
-        ProjectID: number,
-        FileID: number,
-        uid: string
-    ): Promise<string> {
+    static async deleteFile(userId: number, FileID: number, uid: string): Promise<string> {
         try {
             const response = await axios.delete(
                 `${PROJECT_SERVICE_URL}/project_files/${FileID}`,
