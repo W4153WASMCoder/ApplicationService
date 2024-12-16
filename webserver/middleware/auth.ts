@@ -8,6 +8,8 @@ export const authMiddleware = async (
     next: NextFunction,
 ) => {
     const { tokenid } = req.headers;
+    const uid = req.uid;
+    console.log(uid);
 
     if (!tokenid) {
         res.status(401).json({
@@ -18,7 +20,7 @@ export const authMiddleware = async (
     }
 
     try {
-        const userId = await User.verifyToken(tokenid as string);
+        const userId = await User.verifyToken(tokenid as string, uid as string);
         (req as any).userId = userId; // Attach UserID to request
         next();
     } catch (error: any) {

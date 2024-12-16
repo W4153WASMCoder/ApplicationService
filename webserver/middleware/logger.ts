@@ -6,18 +6,13 @@ const generateUID = (): string => {
     );
 };
 
-declare module "express-serve-static-core" {
-    interface Request {
-        uid?: string;
-    }
-}
-
 export function log_init(
     req: Request,
     res: Response,
     next: NextFunction,
 ): void {
     const uid = generateUID();
+    // res.setHeader("uid", uid);
     req.uid = uid;
     const timestamp = new Date().toISOString();
     console.log(

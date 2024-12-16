@@ -302,6 +302,7 @@ router.use(authMiddleware);
 router.post("/", async (req: Request, res: Response) => {
     const { ProjectName } = req.body;
     const userId = (req as any).userId;
+    const uid = req.uid;
 
     if (!ProjectName) {
         res.status(400).json({
@@ -313,7 +314,11 @@ router.post("/", async (req: Request, res: Response) => {
 
     try {
         // adding the project and getting the data
-        const newProject = await ProjectService.addProject(userId, ProjectName);
+        const newProject = await ProjectService.addProject(
+            userId,
+            ProjectName,
+            uid as string,
+        );
 
         // generate links
         const links = {
@@ -347,11 +352,13 @@ router.post("/", async (req: Request, res: Response) => {
 router.delete("/:projectId", async (req: Request, res: Response) => {
     const { projectId } = req.params;
     const userId = (req as any).userId;
+    const uid = req.uid;
 
     try {
         const status = await ProjectService.deleteProject(
             userId,
             Number(projectId),
+            uid as string,
         );
         res.json({
             status: "success",
@@ -375,6 +382,7 @@ router.put("/:projectId", async (req: Request, res: Response) => {
     const { projectId } = req.params;
     const { ProjectName } = req.body;
     const userId = (req as any).userId;
+    const uid = req.uid as string;
 
     if (!ProjectName) {
         res.status(400).json({
@@ -389,6 +397,7 @@ router.put("/:projectId", async (req: Request, res: Response) => {
             userId,
             Number(projectId),
             ProjectName,
+            uid,
         );
         res.json({
             status: "success",
@@ -412,6 +421,7 @@ router.put("/:projectId", async (req: Request, res: Response) => {
 router.get("/", paginate, async (req: Request, res: Response) => {
     const userId = (req as any).userId;
     const { limit, offset } = (req as any).pagination as Pagination;
+    const uid = req.uid as string;
 
     try {
         // Fetch total project count and the paginated list of projects
@@ -419,6 +429,7 @@ router.get("/", paginate, async (req: Request, res: Response) => {
             userId,
             limit,
             offset,
+            uid,
         );
 
         // Generate HATEOAS links for pagination

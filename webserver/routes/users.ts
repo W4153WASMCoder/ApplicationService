@@ -171,7 +171,10 @@ const router = Router();
  */
 router.post("/login", async (req: Request, res: Response) => {
     const { username } = req.body;
-
+    //const uid = req.headers["Request-UID"] as string;
+    console.log(req.headers);
+    const uid = req.uid;
+    console.log("uid: " + uid);
     // Validate input
     if (!username) {
         res.status(400).json({
@@ -183,7 +186,7 @@ router.post("/login", async (req: Request, res: Response) => {
 
     try {
         // Find user by username
-        const user = await User.findUserByUserName(username);
+        const user = await User.findUserByUserName(username, uid as string);
         // If user not found, return an error
         if (!user || !user.UserID) {
             res.status(404).json({
@@ -194,7 +197,7 @@ router.post("/login", async (req: Request, res: Response) => {
         }
 
         // Create token for the user
-        const token = await User.createToken(user.UserID!);
+        const token = await User.createToken(user.UserID!, uid as string);
 
         res.status(200).json({
             status: "success",

@@ -7,10 +7,11 @@ dotenv.config();
 const USER_SERVICE_URL = process.env.USER_SERVICE_URL;
 
 export class User {
-    static async verifyToken(tokenId: string): Promise<number> {
+    static async verifyToken(tokenId: string, uid: string): Promise<number> {
         try {
             const response = await axios.get(
                 `${USER_SERVICE_URL}/user_tokens/${tokenId}`,
+                { headers: { uid } },
             );
             if (response.status === 200) {
                 const token = JSON.parse(response.data);
@@ -30,10 +31,14 @@ export class User {
             throw new Error("Invalid TokenID");
         }
     }
-    static async findUserByUserName(user_name: string): Promise<UserModel> {
+    static async findUserByUserName(
+        user_name: string,
+        uid: string,
+    ): Promise<UserModel> {
         try {
             const response = await axios.get(
                 `${USER_SERVICE_URL}/users?UserName=${user_name}`,
+                { headers: { uid } },
             );
             const user = JSON.parse(response.data.data[0]);
             if (response.status === 200) {
@@ -46,12 +51,18 @@ export class User {
             throw new Error("Invalid UserName");
         }
     }
-    static async createToken(UserID: number): Promise<ActiveToken> {
+    static async createToken(
+        UserID: number,
+        uid: string,
+    ): Promise<ActiveToken> {
         try {
             const response = await axios.post(
                 `${USER_SERVICE_URL}/user_tokens/`,
                 {
                     UserID,
+                },
+                {
+                    headers: { uid },
                 },
             );
             const token = JSON.parse(response.data);

@@ -268,6 +268,7 @@ router.use(authMiddleware);
 router.post("/", async (req: Request, res: Response) => {
     const { ProjectID, FileName, ParentDirectory_FileID } = req.body;
     const userId = (req as any).userId;
+    const uid = req.uid as string;
 
     if (!ProjectID || !FileName) {
         res.status(400).json({
@@ -283,6 +284,7 @@ router.post("/", async (req: Request, res: Response) => {
             ProjectID,
             FileName,
             ParentDirectory_FileID,
+            uid,
         );
         res.status(201).json({
             status: "success",
@@ -306,6 +308,7 @@ router.delete("/:fileId", async (req: Request, res: Response) => {
     const { fileId } = req.params;
     const { ProjectID } = req.body;
     const userId = (req as any).userId;
+    const uid = req.uid as string;
 
     if (!ProjectID) {
         res.status(400).json({
@@ -320,6 +323,7 @@ router.delete("/:fileId", async (req: Request, res: Response) => {
             userId,
             ProjectID,
             Number(fileId),
+            uid,
         );
         res.json({ status: "success", message: "File deleted", data: status });
     } catch (error) {
@@ -339,6 +343,7 @@ router.put("/:fileId", async (req: Request, res: Response) => {
     const { fileId } = req.params;
     const { ProjectID, UpdatedFile } = req.body;
     const userId = (req as any).userId;
+    const uid = req.uid as string;
 
     if (!ProjectID || !UpdatedFile) {
         res.status(400).json({
@@ -354,6 +359,7 @@ router.put("/:fileId", async (req: Request, res: Response) => {
             ProjectID,
             Number(fileId),
             UpdatedFile,
+            uid,
         );
         res.json({ status: "success", message: "File updated", data: status });
     } catch (error) {
@@ -373,6 +379,7 @@ router.get("/:fileId", async (req: Request, res: Response) => {
     const { fileId } = req.params;
     const { ProjectID } = req.query;
     const userId = (req as any).userId;
+    const uid = req.uid as string;
 
     if (!ProjectID) {
         res.status(400).json({
@@ -387,6 +394,7 @@ router.get("/:fileId", async (req: Request, res: Response) => {
             userId,
             Number(ProjectID),
             Number(fileId),
+            uid,
         );
         res.json({ status: "success", data: fileData });
     } catch (error) {
@@ -404,6 +412,7 @@ router.get("/:fileId", async (req: Request, res: Response) => {
  */
 router.get("/", paginate, async (req: Request, res: Response) => {
     const { ProjectID, UserID } = req.query;
+    const uid = req.uid as string;
 
     if (!ProjectID) {
         res.status(400).json({
@@ -423,6 +432,7 @@ router.get("/", paginate, async (req: Request, res: Response) => {
             Number(ProjectID),
             limit,
             offset,
+            uid,
         );
 
         // Generate HATEOAS links

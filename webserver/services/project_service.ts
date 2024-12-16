@@ -21,6 +21,7 @@ export class ProjectService {
     static async addProject(
         userId: number,
         ProjectName: string,
+        uid: string,
     ): Promise<Project> {
         try {
             const response = await axios.post(
@@ -29,6 +30,9 @@ export class ProjectService {
                     OwningUserID: userId,
                     ProjectName,
                 },
+                {
+                    headers: { uid },
+                }
             );
 
             if (response.status !== 201)
@@ -50,10 +54,12 @@ export class ProjectService {
     static async deleteProject(
         userId: number,
         projectId: number,
+        uid: string,
     ): Promise<void> {
         try {
             const response = await axios.delete(
                 `${PROJECT_SERVICE_URL}/projects/${projectId}`,
+                { headers: { uid } },
             );
             if (response.status !== 204)
                 throw new Error("Failed to delete project");
@@ -73,6 +79,7 @@ export class ProjectService {
         userId: number,
         projectId: number,
         ProjectName: string,
+        uid: string,
     ): Promise<void> {
         try {
             const response = await axios.put(
@@ -80,6 +87,9 @@ export class ProjectService {
                 {
                     ProjectName,
                 },
+                {
+                    headers: { uid }
+                }
             );
 
             if (response.status !== 200)
@@ -98,6 +108,7 @@ export class ProjectService {
         userId: number,
         limit: number,
         offset: number,
+        uid: string,
     ): Promise<{ Projects: Project[]; total: number }> {
         try {
             const response = await axios.get(
@@ -108,6 +119,7 @@ export class ProjectService {
                         limit: limit,
                         offset: offset,
                     },
+                    headers: { uid },
                 },
             );
 
@@ -138,6 +150,7 @@ export class ProjectService {
         ProjectID: number,
         FileName: string,
         ParentDirectory_FileID: number | null,
+        uid: string
     ): Promise<void> {
         try {
             const response = await axios.post(
@@ -148,6 +161,9 @@ export class ProjectService {
                     FileName,
                     IsDirectory: false,
                 },
+                {
+                    headers: { uid }
+                }
             );
 
             if (response.status !== 201) throw new Error("Failed to add file");
@@ -167,10 +183,12 @@ export class ProjectService {
         userId: number,
         ProjectID: number,
         FileID: number,
+        uid: string
     ): Promise<string> {
         try {
             const response = await axios.delete(
                 `${PROJECT_SERVICE_URL}/project_files/${FileID}`,
+                { headers: { uid } }
             );
             if (response.status === 204) {
                 return "File deleted successfully";
@@ -195,11 +213,13 @@ export class ProjectService {
         ProjectID: number,
         FileID: number,
         UpdatedFile: Partial<ProjectFile>,
+        uid: string
     ): Promise<void> {
         try {
             const response = await axios.put(
                 `${PROJECT_SERVICE_URL}/project_files/${FileID}`,
                 UpdatedFile,
+                { headers: { uid } }
             );
 
             if (response.status !== 200)
@@ -220,10 +240,12 @@ export class ProjectService {
         userId: number,
         ProjectID: number,
         FileID: number,
+        uid: string
     ): Promise<ProjectFile> {
         try {
             const response = await axios.get(
                 `${PROJECT_SERVICE_URL}/project_files/${FileID}`,
+                { headers: { uid } }
             );
 
             if (response.status === 200) {
@@ -248,6 +270,7 @@ export class ProjectService {
         ProjectID: number,
         limit: number,
         offset: number,
+        uid: string
     ): Promise<{ total: number; files: ProjectFileStructure[] }> {
         try {
             const response = await axios.get(
@@ -258,6 +281,7 @@ export class ProjectService {
                         limit: 100, // Adjust limit as needed
                         offset: offset,
                     },
+                    headers: { uid }
                 },
             );
 
